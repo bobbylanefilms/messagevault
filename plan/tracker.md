@@ -1,18 +1,20 @@
 # MessageVault — Project Tracker
 
-## Stage 1: Foundation & Auth
-- [ ] A1. Project Setup and Configuration
-- [ ] A2. Convex Schema and Database Setup
-- [ ] A3. Authentication and User Management
-- [ ] A4. App Shell and Layout
-- [ ] A5. Shared Utilities and UI Components
+**Progress: ██████████░░░░░░░░░░░░░░░░░░░░ 10/30 (33%)**
 
-## Stage 2: Import Pipeline
-- [ ] B1. File Upload and Header Scanning
-- [ ] B2. Identity Resolution UI
-- [ ] B3. Message Parser
-- [ ] B4. Batched Import Pipeline
-- [ ] B5. Background Embedding Generation
+## Stage 1: Foundation & Auth ✅
+- [x] A1. Project Setup and Configuration
+- [x] A2. Convex Schema and Database Setup
+- [x] A3. Authentication and User Management
+- [x] A4. App Shell and Layout
+- [x] A5. Shared Utilities and UI Components
+
+## Stage 2: Import Pipeline ✅
+- [x] B1. File Upload and Header Scanning
+- [x] B2. Identity Resolution UI
+- [x] B3. Message Parser
+- [x] B4. Batched Import Pipeline
+- [x] B5. Background Embedding Generation
 
 ## Stage 3: Browse & Conversations
 - [ ] C1. Conversation List and Sidebar

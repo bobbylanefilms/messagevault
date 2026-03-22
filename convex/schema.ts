@@ -181,6 +181,7 @@ export default defineSchema({
     sourceFilename: v.string(),
     totalLines: v.optional(v.number()),
     parsedMessages: v.number(),
+    skippedDuplicates: v.number(),
     embeddedMessages: v.number(),
     totalMessages: v.number(),
     error: v.optional(v.string()),
