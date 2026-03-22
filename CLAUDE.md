@@ -115,3 +115,12 @@ Query classification (Haiku) → context retrieval by strategy → context windo
 5. Search (E1-E4)
 6. AI Chat (F1-F5)
 7. Dashboard & Settings (G1-G4)
+
+## Tracker Maintenance
+
+After completing each project, update `plan/tracker.md`:
+1. Check off the completed project (`[x]`)
+2. Update the progress bar and percentage at the top
+3. Mark the stage as complete with a checkmark emoji when all projects in that stage are done
+
+The progress bar uses block characters: filled for completed, empty for remaining (30 chars total, 1 per project).
