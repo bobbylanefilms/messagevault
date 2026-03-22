@@ -285,15 +285,17 @@
 - Conversation record creation from parsed header metadata
 - Batched message insertion (~2,000 messages per action invocation)
 - Scheduler chaining: each batch writes via `ctx.runMutation`, then schedules the next batch via `ctx.scheduler.runAfter(0, ...)`
+- **Message deduplication:** before inserting each batch, query existing messages in the same conversation by `timestamp` + `participantId` + content. Skip duplicates and increment `importJobs.skippedDuplicates` counter. Handles same-file re-import and overlapping date ranges across separate exports. Uses the existing `by_conversationId_timestamp` index for efficient lookup.
 - Reaction resolution pass: match `quotedText` against recent messages to resolve `messageId` links, update `hasReactions` flags
 - Daily stats aggregation: compute per-day message counts, upsert `dailyStats` records with conversation and participant breakdowns
 - Import job status transitions: uploading -> parsing -> embedding -> completed/failed
-- Real-time progress updates: `parsedMessages` counter updated after each batch
+- Real-time progress updates: `parsedMessages` and `skippedDuplicates` counters updated after each batch
 - Error handling: catch and record errors, set job to "failed" status with error message
 - Conversation metadata finalization: set `dateRange`, `messageCount`, `participantIds`
 
 **UI/UX Details:**
 - Import progress bar showing parsing progress (parsedMessages / totalMessages estimated from line count)
+- Duplicate count shown alongside progress (e.g., "Parsed 1,200 messages (34 duplicates skipped)")
 - Status text indicating current pipeline stage
 - Real-time updates via Convex reactive queries on `importJobs`
 
@@ -305,7 +307,7 @@
 
 **Constraints:** Requires B3 (parser) for parsing logic, B2 (identity resolution) for participant IDs, A2 (schema) for all tables and indexes. Must handle 50K+ line files within Convex constraints.
 
-**Deliverable:** Full file imported into structured records. Daily stats computed. Reactions resolved. Import job shows "completed" status. Conversation appears in query results.
+**Deliverable:** Full file imported into structured records with duplicates skipped. Daily stats computed. Reactions resolved. Import job shows "completed" status with duplicate count. Conversation appears in query results.
 
 ---
 

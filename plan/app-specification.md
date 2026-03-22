@@ -70,8 +70,9 @@ Import Apple Messages markdown export files into the structured database.
 - Client-side header scanning to extract participant names before upload
 - Identity resolution UI: user maps "Me" to their real name, deduplicates participants against existing records
 - Batched server-side parsing (handles files with 50K+ lines within Convex action timeouts)
+- **Message deduplication:** before inserting each batch, check for existing messages with matching `timestamp` + `participantId` + content. Duplicates are skipped and counted. Handles both re-importing the same file and overlapping date ranges across separate exports.
 - Background embedding generation (browsing available immediately after parsing)
-- Import progress tracking with real-time status updates
+- Import progress tracking with real-time status updates (including skipped duplicate count)
 - Import history showing past imports with stats
 
 **Parser Support:**
@@ -364,6 +365,7 @@ Import progress tracking.
 | `sourceFilename` | `v.string()` | |
 | `totalLines` | `v.optional(v.number())` | |
 | `parsedMessages` | `v.number()` | Parsing progress |
+| `skippedDuplicates` | `v.number()` | Messages skipped as duplicates |
 | `embeddedMessages` | `v.number()` | Embedding progress |
 | `totalMessages` | `v.number()` | Total after parsing |
 | `error` | `v.optional(v.string())` | Error message if failed |
@@ -387,7 +389,7 @@ The pipeline processes large files (51K+ lines) within Convex's 10-minute action
 1. **Client upload** — File read as text via `FileReader`, content sent to Convex mutation
 2. **Identity resolution** — Client-side pre-scan extracts participant names; UI prompts user to map "Me" (Decision D2) and deduplicate against existing participants
 3. **Header parsing** — Convex action parses the `# Messages with [Name]` header, creates conversation and participant records
-4. **Message parsing** — Batched in ~2,000 messages per action invocation. Each batch writes via `ctx.runMutation`, then schedules the next batch via `ctx.scheduler.runAfter(0, ...)`. State machine parser handles day headers, timestamps, participant detection, content extraction, reaction parsing, attachment detection.
+4. **Message parsing** — Batched in ~2,000 messages per action invocation. Each batch writes via `ctx.runMutation`, then schedules the next batch via `ctx.scheduler.runAfter(0, ...)`. State machine parser handles day headers, timestamps, participant detection, content extraction, reaction parsing, attachment detection. **Before inserting each batch, deduplicate against existing messages** in the same conversation using `timestamp` + `participantId` + content matching. Duplicates are skipped and counted via `importJobs.skippedDuplicates`.
 5. **Reaction resolution** — After all messages are parsed, a pass matches reaction `quotedText` against recent messages to resolve `messageId` links (Decision D9)
 6. **Daily stats aggregation** — Aggregate message counts by date, upsert `dailyStats` records (Decision D8)
 7. **Embedding generation** — Batched: 100 messages per Voyage API call, multiple calls per action. For short messages, embed with a 3-message contextual window (previous + current + next) to give semantic meaning to replies like "ok" or "lol". Progress tracked via `importJobs.embeddedMessages`. Rate limit handling with exponential backoff via scheduler.
@@ -618,7 +620,9 @@ These metrics define what "working well" looks like for a family archive tool. T
 - Filtering by conversation or participant updates the heatmap correctly
 
 ### Data Integrity
-- All messages from an import file are accounted for (parsed count matches expected count)
+- All messages from an import file are accounted for (parsed count + skipped duplicates matches expected count)
+- Re-importing the same file produces zero new messages and reports all as duplicates
+- Importing overlapping exports deduplicates the overlap while inserting new messages
 - Reactions are correctly linked to their source messages
 - Participant identity is consistent across conversations after deduplication
 - Data persists correctly across sessions — refreshing the browser loses no state
