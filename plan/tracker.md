@@ -1,6 +1,6 @@
 # MessageVault — Project Tracker
 
-**Progress: ██████████████░░░░░░░░░░░░░░░░ 14/30 (47%)**
+**Progress: █████████████████░░░░░░░░░░░░░ 17/30 (57%)**
 
 ## Stage 1: Foundation & Auth ✅
 - [x] A1. Project Setup and Configuration
@@ -22,10 +22,10 @@
 - [x] C3. Reactions Display
 - [x] C4. Date Navigation and Participant Filter
 
-## Stage 4: Calendar Visualization
-- [ ] D1. Calendar Heatmap Component
-- [ ] D2. Calendar Filters
-- [ ] D3. Calendar Day Detail View
+## Stage 4: Calendar Visualization ✅
+- [x] D1. Calendar Heatmap Component
+- [x] D2. Calendar Filters
+- [x] D3. Calendar Day Detail View
 
 ## Stage 5: Search
 - [ ] E1. Keyword Search
