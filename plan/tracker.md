@@ -1,6 +1,6 @@
 # MessageVault — Project Tracker
 
-**Progress: ██████████░░░░░░░░░░░░░░░░░░░░ 10/30 (33%)**
+**Progress: ██████████████░░░░░░░░░░░░░░░░ 14/30 (47%)**
 
 ## Stage 1: Foundation & Auth ✅
 - [x] A1. Project Setup and Configuration
@@ -16,11 +16,11 @@
 - [x] B4. Batched Import Pipeline
 - [x] B5. Background Embedding Generation
 
-## Stage 3: Browse & Conversations
-- [ ] C1. Conversation List and Sidebar
-- [ ] C2. Message Thread View with Virtualized Scrolling
-- [ ] C3. Reactions Display
-- [ ] C4. Date Navigation and Participant Filter
+## Stage 3: Browse & Conversations ✅
+- [x] C1. Conversation List and Sidebar
+- [x] C2. Message Thread View with Virtualized Scrolling
+- [x] C3. Reactions Display
+- [x] C4. Date Navigation and Participant Filter
 
 ## Stage 4: Calendar Visualization
 - [ ] D1. Calendar Heatmap Component

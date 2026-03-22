@@ -1,6 +1,6 @@
 "use client";
 
-// ABOUTME: App sidebar — primary navigation with conversation list placeholder and view links.
+// ABOUTME: App sidebar — primary navigation with live conversation list and view links.
 // ABOUTME: Collapsible on desktop (rail mode shows icons only), rendered in Sheet on mobile.
 
 import Link from "next/link";
@@ -12,7 +12,7 @@ import {
   Bot,
   Upload,
   Settings,
-  MessageSquare,
+
   PanelLeftClose,
   PanelLeft,
 } from "lucide-react";
@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSidebarStore } from "@/lib/stores/use-sidebar-store";
+import { ConversationList } from "@/components/browse/conversation-list";
 
 const viewNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -108,22 +109,7 @@ export function Sidebar() {
                   Messages
                 </h2>
               )}
-              {isCollapsed ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex justify-center py-2">
-                      <MessageSquare className="h-4 w-4 text-sidebar-muted-foreground" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={8}>
-                    Messages
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <p className="px-3 py-6 text-center text-xs text-sidebar-muted-foreground">
-                  Import conversations to see them here
-                </p>
-              )}
+              <ConversationList isCollapsed={isCollapsed} />
             </div>
           </ScrollArea>
         </div>
