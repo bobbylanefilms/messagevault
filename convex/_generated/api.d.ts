@@ -9,6 +9,7 @@
  */
 
 import type * as conversations from "../conversations.js";
+import type * as dailyStats from "../dailyStats.js";
 import type * as embeddings from "../embeddings.js";
 import type * as import_ from "../import.js";
 import type * as importJobs from "../importJobs.js";
@@ -28,6 +29,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   conversations: typeof conversations;
+  dailyStats: typeof dailyStats;
   embeddings: typeof embeddings;
   import: typeof import_;
   importJobs: typeof importJobs;

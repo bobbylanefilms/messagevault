@@ -49,3 +49,25 @@ export const countByConversation = query({
     return conversation.messageCount;
   },
 });
+
+/**
+ * Get all messages for a specific date across all conversations.
+ * Used by the calendar day detail view.
+ */
+export const listByDateKey = query({
+  args: { dateKey: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_userId_dateKey", (q) =>
+        q.eq("userId", userId as any).eq("dateKey", args.dateKey)
+      )
+      .collect();
+
+    messages.sort((a, b) => a.timestamp - b.timestamp);
+
+    return messages;
+  },
+});

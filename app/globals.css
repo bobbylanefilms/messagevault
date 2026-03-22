@@ -62,6 +62,12 @@
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
 
+  --color-heatmap-empty: oklch(0.18 0.005 260);
+  --color-heatmap-level-1: oklch(0.28 0.08 155);
+  --color-heatmap-level-2: oklch(0.38 0.12 155);
+  --color-heatmap-level-3: oklch(0.48 0.14 155);
+  --color-heatmap-level-4: oklch(0.58 0.16 155);
+
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
 }
