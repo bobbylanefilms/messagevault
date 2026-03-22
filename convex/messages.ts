@@ -128,3 +128,24 @@ export const keywordSearch = query({
     return { results, totalCount };
   },
 });
+
+/**
+ * Load messages by an array of IDs. Used for source attribution in AI chat.
+ * Returns messages with conversation context for display.
+ */
+export const getByIds = query({
+  args: { messageIds: v.array(v.id("messages")) },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
+    const messages = await Promise.all(
+      args.messageIds.map(async (id) => {
+        const msg = await ctx.db.get(id);
+        if (!msg || msg.userId !== (userId as any)) return null;
+        return msg;
+      })
+    );
+
+    return messages.filter(Boolean);
+  },
+});
