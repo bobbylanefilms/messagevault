@@ -1,5 +1,5 @@
-// ABOUTME: Message queries — paginated list by conversation, count, and single fetch.
-// ABOUTME: Primary data source for the browse thread view (C2) and future search/calendar views.
+// ABOUTME: Message queries — paginated list, count, date key list, and keyword search.
+// ABOUTME: Data source for browse thread view (C2), calendar day view (D3), and search (E1).
 
 import { query } from "./_generated/server";
 import { paginationOptsValidator } from "convex/server";
@@ -69,5 +69,62 @@ export const listByDateKey = query({
     messages.sort((a, b) => a.timestamp - b.timestamp);
 
     return messages;
+  },
+});
+
+/**
+ * Keyword search across all messages using Convex full-text search.
+ * Returns relevance-ranked results filtered by user, with optional
+ * conversation and participant filters.
+ */
+export const keywordSearch = query({
+  args: {
+    searchQuery: v.string(),
+    conversationId: v.optional(v.id("conversations")),
+    participantId: v.optional(v.id("participants")),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    const maxResults = args.limit ?? 50;
+
+    // Sanitize: trim whitespace, bail on empty
+    const trimmed = args.searchQuery.trim();
+    if (!trimmed) return { results: [], totalCount: 0 };
+
+    // Build the search query with available filters
+    const searchBuilder = ctx.db
+      .query("messages")
+      .withSearchIndex("search_content", (q) => {
+        let search = q.search("content", trimmed).eq("userId", userId as any);
+        if (args.conversationId) {
+          search = search.eq("conversationId", args.conversationId);
+        }
+        if (args.participantId) {
+          search = search.eq("participantId", args.participantId);
+        }
+        return search;
+      });
+
+    // Convex search returns results in relevance order.
+    // Take more than needed so we can return a total count.
+    const allResults = await searchBuilder.take(256);
+    const totalCount = allResults.length;
+
+    // Slice to the requested limit
+    const results = allResults.slice(0, maxResults).map((msg) => ({
+      _id: msg._id,
+      conversationId: msg.conversationId,
+      participantId: msg.participantId,
+      senderName: msg.senderName,
+      content: msg.content,
+      timestamp: msg.timestamp,
+      dateKey: msg.dateKey,
+      messageType: msg.messageType,
+      attachmentRef: msg.attachmentRef,
+      hasReactions: msg.hasReactions,
+    }));
+
+    return { results, totalCount };
   },
 });

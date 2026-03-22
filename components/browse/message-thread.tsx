@@ -15,6 +15,7 @@ import { ThreadToolbar } from "@/components/browse/thread-toolbar";
 import { MessageThreadSkeleton } from "@/components/shared/skeletons";
 import { isWithinMinutes } from "@/lib/date-utils";
 import { useBrowseStore } from "@/lib/stores/use-browse-store";
+import { cn } from "@/lib/utils";
 import { ME_BUBBLE_COLOR } from "@/lib/participant-colors";
 
 interface Participant {
@@ -70,6 +71,8 @@ export function MessageThread({
     selectedParticipantIds,
     scrollToDateKey,
     setScrollToDateKey,
+    highlightedMessageId,
+    setHighlightedMessageId,
   } = useBrowseStore();
 
   // Reset browse state when conversation changes
@@ -286,6 +289,23 @@ export function MessageThread({
     setScrollToDateKey(null);
   }, [scrollToDateKey, rows, virtualizer, setScrollToDateKey]);
 
+  // E4: Scroll to and highlight a message from search click-through
+  useEffect(() => {
+    if (!highlightedMessageId || rows.length === 0 || status !== "Exhausted") return;
+
+    const targetIndex = rows.findIndex(
+      (row) => row.type === "message" && row.message._id === highlightedMessageId
+    );
+
+    if (targetIndex >= 0) {
+      virtualizer.scrollToIndex(targetIndex, { align: "center" });
+    }
+
+    // Auto-clear highlight after 3 seconds
+    const timer = setTimeout(() => setHighlightedMessageId(null), 3000);
+    return () => clearTimeout(timer);
+  }, [highlightedMessageId, rows, status, virtualizer, setHighlightedMessageId]);
+
   // Loading state
   if (messages.length === 0 && status === "LoadingFirstPage") {
     return (
@@ -336,6 +356,13 @@ export function MessageThread({
                   {row.type === "divider" ? (
                     <DayDivider dateKey={row.dateKey} />
                   ) : (
+                    <div
+                      className={cn(
+                        "transition-all duration-500",
+                        row.message._id === highlightedMessageId &&
+                          "rounded-2xl ring-2 ring-primary/50 bg-primary/5"
+                      )}
+                    >
                     <MessageBubble
                       content={row.message.content}
                       senderName={row.message.senderName}
@@ -354,6 +381,7 @@ export function MessageThread({
                         ) : undefined
                       }
                     />
+                    </div>
                   )}
                 </div>
               </div>

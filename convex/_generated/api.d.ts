@@ -19,6 +19,7 @@ import type * as lib_parser from "../lib/parser.js";
 import type * as messages from "../messages.js";
 import type * as participants from "../participants.js";
 import type * as reactions from "../reactions.js";
+import type * as search from "../search.js";
 import type * as users from "../users.js";
 
 import type {
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   participants: typeof participants;
   reactions: typeof reactions;
+  search: typeof search;
   users: typeof users;
 }>;
 
