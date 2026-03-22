@@ -2,6 +2,7 @@
 // ABOUTME: The ensureUser mutation triggers just-in-time user creation via getUserId.
 
 import { query, mutation } from "./_generated/server";
+import { v } from "convex/values";
 import { getUserId } from "./lib/auth";
 
 /**
@@ -34,5 +35,37 @@ export const ensureUser = mutation({
   handler: async (ctx) => {
     const userId = await getUserId(ctx);
     return userId;
+  },
+});
+
+export const updateProfile = mutation({
+  args: {
+    displayName: v.string(),
+    realName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    await ctx.db.patch(userId as any, {
+      displayName: args.displayName,
+      realName: args.realName,
+    });
+  },
+});
+
+export const updatePreferences = mutation({
+  args: {
+    defaultModel: v.string(),
+    thinkingEnabled: v.boolean(),
+    theme: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+    await ctx.db.patch(userId as any, {
+      preferences: {
+        defaultModel: args.defaultModel,
+        thinkingEnabled: args.thinkingEnabled,
+        theme: args.theme,
+      },
+    });
   },
 });

@@ -13,6 +13,8 @@ import type * as chatMessages from "../chatMessages.js";
 import type * as chatSessions from "../chatSessions.js";
 import type * as conversations from "../conversations.js";
 import type * as dailyStats from "../dailyStats.js";
+import type * as dashboard from "../dashboard.js";
+import type * as dataManagement from "../dataManagement.js";
 import type * as embeddings from "../embeddings.js";
 import type * as http from "../http.js";
 import type * as import_ from "../import.js";
@@ -39,6 +41,8 @@ declare const fullApi: ApiFromModules<{
   chatSessions: typeof chatSessions;
   conversations: typeof conversations;
   dailyStats: typeof dailyStats;
+  dashboard: typeof dashboard;
+  dataManagement: typeof dataManagement;
   embeddings: typeof embeddings;
   http: typeof http;
   import: typeof import_;

@@ -11,6 +11,7 @@ import { api } from "@/convex/_generated/api";
 import { Topbar } from "@/components/shell/topbar";
 import { Sidebar } from "@/components/shell/sidebar";
 import { MobileSidebar } from "@/components/shell/mobile-sidebar";
+import { Toaster } from "sonner";
 
 export default function AppLayout({
   children,
@@ -59,6 +60,7 @@ export default function AppLayout({
           {children}
         </main>
       </div>
+      <Toaster position="bottom-right" theme="dark" />
     </div>
   );
 }
