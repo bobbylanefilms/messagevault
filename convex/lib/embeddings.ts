@@ -38,7 +38,7 @@ export function buildContextualText(
 }
 
 /**
- * Generate embeddings for a batch of texts using Voyage-3-lite (1024 dims).
+ * Generate embeddings for a batch of texts using Voyage-3-lite (512 dims).
  */
 export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
   if (texts.length === 0) return [];

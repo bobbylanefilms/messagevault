@@ -86,7 +86,7 @@ export default defineSchema({
     })
     .vectorIndex("by_embedding", {
       vectorField: "embedding",
-      dimensions: 1024,
+      dimensions: 512,
       filterFields: ["userId", "conversationId"],
     }),
 

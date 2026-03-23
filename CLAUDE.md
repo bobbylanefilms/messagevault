@@ -14,7 +14,7 @@ MessageVault is a family-focused web app for importing, browsing, searching, and
 - **Backend/Database:** Convex (reactive, real-time, native vector search)
 - **Auth:** Clerk (@clerk/nextjs, `ConvexProviderWithClerk` wrapper)
 - **State:** Zustand (ephemeral UI state only — all persistent state in Convex)
-- **AI:** Anthropic SDK (Opus 4.6, Sonnet 4.6, Haiku 4.5) + Voyage AI `voyage-3-lite` (1024-dim embeddings). npm package is `voyageai` (not `voyage-ai`)
+- **AI:** Anthropic SDK (Opus 4.6, Sonnet 4.6, Haiku 4.5) + Voyage AI `voyage-3-lite` (512-dim embeddings). npm package is `voyageai` (not `voyage-ai`)
 - **Virtualization:** @tanstack/react-virtual
 - **Deployment:** Vercel preview (frontend) + Convex dev (backend) — development mode only
 
