@@ -6,10 +6,15 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarDays } from "lucide-react";
+import { format } from "date-fns";
+import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { useChatStore } from "@/lib/stores/use-chat-store";
 
 interface ChatScopePanelProps {
@@ -29,6 +34,15 @@ export function ChatScopePanel({ sessionId, contextScope }: ChatScopePanelProps)
 
   const selectedConvIds = new Set(contextScope?.conversationIds?.map(String) ?? []);
   const selectedPartIds = new Set(contextScope?.participantIds?.map(String) ?? []);
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(
+    contextScope?.dateRange?.start
+      ? {
+          from: new Date(contextScope.dateRange.start),
+          to: contextScope.dateRange.end ? new Date(contextScope.dateRange.end) : undefined,
+        }
+      : undefined
+  );
 
   async function toggleConversation(convId: Id<"conversations">) {
     const current = contextScope?.conversationIds ?? [];
@@ -58,20 +72,37 @@ export function ChatScopePanel({ sessionId, contextScope }: ChatScopePanelProps)
     });
   }
 
-  async function handleDateChange(field: "start" | "end", value: string) {
-    if (!value) return;
-    const timestamp = new Date(value).getTime();
-    const current = contextScope?.dateRange ?? { start: 0, end: Date.now() };
-    await updateSession({
-      sessionId,
-      contextScope: {
-        ...contextScope,
-        dateRange: { ...current, [field]: timestamp },
-      },
-    });
+  async function handleDateSelect(range: DateRange | undefined) {
+    setDateRange(range);
+    if (range?.from) {
+      const start = range.from.getTime();
+      const end = range.to ? range.to.getTime() + 86400000 - 1 : start + 86400000 - 1;
+      await updateSession({
+        sessionId,
+        contextScope: {
+          ...contextScope,
+          dateRange: { start, end },
+        },
+      });
+    } else {
+      await updateSession({
+        sessionId,
+        contextScope: {
+          ...contextScope,
+          dateRange: undefined,
+        },
+      });
+    }
   }
 
+  const dateLabel = dateRange?.from
+    ? dateRange.to
+      ? `${format(dateRange.from, "MMM d")} \u2013 ${format(dateRange.to, "MMM d, yyyy")}`
+      : format(dateRange.from, "MMM d, yyyy")
+    : "Select dates";
+
   async function clearScope() {
+    setDateRange(undefined);
     await updateSession({
       sessionId,
       contextScope: {},
@@ -145,34 +176,22 @@ export function ChatScopePanel({ sessionId, contextScope }: ChatScopePanelProps)
           <label className="mb-1.5 block text-xs font-semibold uppercase text-muted-foreground">
             Date Range
           </label>
-          <div className="space-y-2">
-            <div>
-              <label className="mb-0.5 block text-[11px] text-muted-foreground">From</label>
-              <input
-                type="date"
-                className="w-full rounded border border-border bg-background px-2 py-1 text-sm"
-                value={
-                  contextScope?.dateRange?.start
-                    ? new Date(contextScope.dateRange.start).toISOString().split("T")[0]
-                    : ""
-                }
-                onChange={(e) => handleDateChange("start", e.target.value)}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 w-full justify-start text-xs gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5" />
+                {dateLabel}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={handleDateSelect}
+                numberOfMonths={2}
               />
-            </div>
-            <div>
-              <label className="mb-0.5 block text-[11px] text-muted-foreground">To</label>
-              <input
-                type="date"
-                className="w-full rounded border border-border bg-background px-2 py-1 text-sm"
-                value={
-                  contextScope?.dateRange?.end
-                    ? new Date(contextScope.dateRange.end).toISOString().split("T")[0]
-                    : ""
-                }
-                onChange={(e) => handleDateChange("end", e.target.value)}
-              />
-            </div>
-          </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>
