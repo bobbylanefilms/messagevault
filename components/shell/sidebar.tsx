@@ -96,7 +96,7 @@ export function Sidebar() {
     <TooltipProvider delayDuration={0}>
       <nav
         className={cn(
-          "flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-in-out",
+          "flex h-full flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-in-out",
           isCollapsed ? "w-[var(--sidebar-width-collapsed)]" : "w-[var(--sidebar-width)]"
         )}
       >
